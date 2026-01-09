@@ -29,4 +29,8 @@ class CategoryController extends Controller
     public function deleteCategory($categoryId) {
         return ["message" => "Deleting 1 category base on given categoryId"];
     }
+
+    public function show($task) {
+        $this->authorize('view', $task);
+    }
 }

@@ -21,3 +21,34 @@ Route::controller(ProductController::class)->prefix('products')->group(function(
     Route::get('/', 'getProducts');
     Route::get('/findProduct', 'findProduct');
 });
+
+Route::post('/login', function (Request $request) {
+    $request->validate(['email'=>'required|email','password'=>'required']);
+
+    if (!Auth::attempt($request->only('email','password'))) {
+        return response()->json(['message'=>'Invalid credentials'], 401);
+    }
+
+    $user = $request->user();
+    $token = $user->createToken('mobile')->accessToken;
+
+    return response()->json(['token'=>$token]);
+});
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/me', fn(Request $r) => $r->user()->load('roles'));
+
+    Route::post('/products', function (Request $request) {
+        abort_unless($request->user()->can('products.create'), 403);
+        return response()->json(['message' => 'Product logic here']);
+    });
+
+    Route::patch('/categories/{category}/status', function (Request $request, Category $category) {
+        abort_unless($request->user()->can('updateStatus', $category), 403);
+
+        $request->validate(['status' => 'required|string']);
+        $category->update(['status' => $request->status]);
+
+        return response()->json(['message' => 'Status updated successfully']);
+    });
+});
