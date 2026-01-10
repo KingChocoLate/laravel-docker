@@ -62,4 +62,16 @@ class User extends Authenticatable
             ->whereHas('permissions', fn($q) => $q->where('name', $permission))
             ->exists();
     }
+
+    public function author(): HasOne {
+        return $this->hasOne(Author::class);
+    }
+
+    public function audience(): HasOne {
+        return $this->hasOne(Audience::class);
+    }
+
+    public function comments(): HasMany {
+        return $this->hasMany(Comment::class);
+    }
 }
