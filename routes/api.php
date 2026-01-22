@@ -5,6 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 
+use App\Http\Controllers\Api\AuthorController;
+use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Api\AudienceController;
+use App\Http\Controllers\Api\SubscriptionController;
+use App\Http\Controllers\Api\CommentController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -52,3 +58,16 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(['message' => 'Status updated successfully']);
     });
 });
+
+
+Route::post('/authors', [AuthorController::class, 'createAuthor']);
+Route::post('/articles', [ArticleController::class, 'createArticle']);
+Route::post('/audiences', [AudienceController::class, 'createAudience']);
+Route::post('/subscriptions', [SubscriptionController::class, 'subscribe']);
+Route::post('/comments', [CommentController::class, 'createComment']);
+
+Route::get('/authors/{authorName}/articles', [QueryController::class, 'getArticlesByAuthor']);
+Route::get('/articles/{articleName}/audiences', [QueryController::class, 'getAudiencesByArticle']);
+Route::get('/authors/{authorName}/audiences', [QueryController::class, 'getAudiencesByAuthor']);
+Route::get('/audiences/{audienceName}/comments', [QueryController::class, 'getCommentsByAudience']);
+Route::get('/comments', [QueryController::class, 'getAllCommentsWithTopic']);
